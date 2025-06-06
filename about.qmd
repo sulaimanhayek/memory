@@ -1,0 +1,25 @@
+---
+title: "About"
+image: pixels.png
+about:
+  template: jolla
+  links:
+    - icon: github
+      text: Github
+      href: https://github.com
+
+---
+
+
+::: {.column-body}
+
+
+<!-- ::: {.hero-image}
+<img src="profile.jpg" alt="Profile Image" />
+::: -->
+
+<p class="hero-about">
+  People remember episodes of experience from their life, known as episodic memory. In recent decades, substantial progress has been made on understanding the basic components of how humans might *do* episodic memory. There are some recent papers proposing computational models that could potentially work on the scale required to replicate many of the aspects of human episodic memory. These kinds of efforts focus on building cognitive models, with components/configurations informed by what we know from human cognitive psychology and neuroscience. But an alternative approach would be to care less about how brains might do it, and more about what kind of situations/stimulations result in humans remembering something. This research project focuses on what specific aspects of experiences are most memorable to people. By examining both natural outdoor and controlled indoor settings through video stimuli, we can better understand the relationship between environmental context and memory formation. This approach allows us to explore not just the theoretical underpinnings of episodic memory, but its practical manifestations in everyday scenarios.
+</p>
+
+:::

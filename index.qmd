@@ -1,0 +1,23 @@
+---
+page-layout: full
+format:
+  html:
+    css: styles.css
+---
+
+<div class="hero-container">
+  <div class="hero-text">
+    
+  **What and how do people remember?**
+
+  <p class="hero-bio">
+    This MSc project is led by <a href="https://suliahmed.com" target="_blank">Sulaiman Ahmed</a> under the supervision of <a href="https://www.warrickroseboom.com/"  target="_blank">Dr. Warrick Roseboom</a> at the University of Sussex. The research examines episodic memory through human behavioral data, fMRI scans, and model-segmented events. The findings are validated through an online study measuring people's recall of natural video scenes.
+  </p>
+
+  [LEARN MORE ABOUT THE PROJECT →](about.qmd){.hero-button}
+
+  </div>
+:::{.hero-image}
+<img src="brain.png" alt="brain image" />
+:::
+</div>
