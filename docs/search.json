@@ -1,0 +1,30 @@
+[
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "People remember episodes of experience from their life, known as episodic memory. In recent decades, substantial progress has been made on understanding the basic components of how humans might do episodic memory. There are some recent papers proposing computational models that could potentially work on the scale required to replicate many of the aspects of human episodic memory. These kinds of efforts focus on building cognitive models, with components/configurations informed by what we know from human cognitive psychology and neuroscience. But an alternative approach would be to care less about how brains might do it, and more about what kind of situations/stimulations result in humans remembering something. This research project focuses on what specific aspects of experiences are most memorable to people. By examining both natural outdoor and controlled indoor settings through video stimuli, we can better understand the relationship between environmental context and memory formation. This approach allows us to explore not just the theoretical underpinnings of episodic memory, but its practical manifestations in everyday scenarios."
+  },
+  {
+    "objectID": "posts/welcome/index.html",
+    "href": "posts/welcome/index.html",
+    "title": "Welcome To My Blog",
+    "section": "",
+    "text": "This is the first post in a Quarto blog. Welcome!\n\nSince this post doesn’t specify an explicit image, the first image in the post will be used in the listing page of posts."
+  },
+  {
+    "objectID": "posts/post-with-code/index.html",
+    "href": "posts/post-with-code/index.html",
+    "title": "Post With Code",
+    "section": "",
+    "text": "This is a post with executable code."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "🧠 The Memory Project",
+    "section": "",
+    "text": "What and how do people remember?\n\nThis MSc project is led by Sulaiman Ahmed under the supervision of Dr. Warrick Roseboom at the University of Sussex. The research examines episodic memory through human behavioral data, fMRI scans, and model-segmented events. The findings are validated through an online study measuring people’s recall of natural video scenes.\n\nLEARN MORE ABOUT THE PROJECT →"
+  }
+]
