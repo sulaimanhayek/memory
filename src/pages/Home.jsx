@@ -69,7 +69,7 @@ const episodes = [
 
 function Home() {
   const navigate = useNavigate()
-  const [currentQuote, setCurrentQuote] = useState(0)
+  const [currentQuote] = useState(() => Math.floor(Math.random() * quotes.length))
   const [visible, setVisible] = useState(false)
   const [done, setDone] = useState(() => sessionStorage.getItem('introSeen') === 'true')
   const [scrollProgress, setScrollProgress] = useState(0)
@@ -95,66 +95,41 @@ function Home() {
     return () => clearTimeout(timer)
   }, [done])
 
-  const advance = useCallback(() => {
+  const dismiss = useCallback(() => {
     if (transitioning.current || done) return
     transitioning.current = true
-
-    // Fade out current quote
     setVisible(false)
-
     setTimeout(() => {
-      setCurrentQuote(prev => {
-        const next = prev + 1
-        if (next >= quotes.length) {
-          setDone(true)
-          sessionStorage.setItem('introSeen', 'true')
-          transitioning.current = false
-          return prev
-        }
-        // Fade in next quote after a brief pause
-        setTimeout(() => {
-          setVisible(true)
-          transitioning.current = false
-        }, 200)
-        return next
-      })
-    }, 800) // wait for fade-out transition
+      setDone(true)
+      sessionStorage.setItem('introSeen', 'true')
+      transitioning.current = false
+    }, 800)
   }, [done])
 
-  // Handle wheel events on the overlay
+  // Dismiss on scroll or swipe
   useEffect(() => {
     if (done) return
 
     const handleWheel = (e) => {
       e.preventDefault()
-      if (e.deltaY > 0) advance()
+      if (e.deltaY > 0) dismiss()
+    }
+
+    let touchStartY = 0
+    const handleTouchStart = (e) => { touchStartY = e.touches[0].clientY }
+    const handleTouchEnd = (e) => {
+      if (touchStartY - e.changedTouches[0].clientY > 30) dismiss()
     }
 
     window.addEventListener('wheel', handleWheel, { passive: false })
-    return () => window.removeEventListener('wheel', handleWheel)
-  }, [done, advance])
-
-  // Handle touch swipe on the overlay
-  useEffect(() => {
-    if (done) return
-    let touchStartY = 0
-
-    const handleTouchStart = (e) => {
-      touchStartY = e.touches[0].clientY
-    }
-
-    const handleTouchEnd = (e) => {
-      const deltaY = touchStartY - e.changedTouches[0].clientY
-      if (deltaY > 30) advance()
-    }
-
     window.addEventListener('touchstart', handleTouchStart, { passive: true })
     window.addEventListener('touchend', handleTouchEnd, { passive: true })
     return () => {
+      window.removeEventListener('wheel', handleWheel)
       window.removeEventListener('touchstart', handleTouchStart)
       window.removeEventListener('touchend', handleTouchEnd)
     }
-  }, [done, advance])
+  }, [done, dismiss])
 
   useEffect(() => {
     let rafId = 0
