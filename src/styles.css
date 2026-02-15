@@ -290,7 +290,7 @@ code {
   height: min(72vh, 620px);
   overflow: visible;
   perspective: 1400px;
-  perspective-origin: 66% 34%;
+  perspective-origin: 60% 38%;
   z-index: 3;
 }
 
@@ -342,6 +342,36 @@ code {
   transform-style: preserve-3d;
   backface-visibility: hidden;
   cursor: default;
+}
+
+/* 3D spine — perpendicular plane on the right edge to simulate card thickness */
+.episode-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 12px;
+  height: 100%;
+  background: linear-gradient(to right, rgba(42, 46, 50, 0.65), rgba(42, 46, 50, 0.25));
+  transform-origin: 100% 50%;
+  transform: rotateY(90deg);
+  border-radius: 0 3px 3px 0;
+  pointer-events: none;
+}
+
+/* Bottom edge — thin horizontal plane for extra thickness */
+.episode-card::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: linear-gradient(to bottom, rgba(42, 46, 50, 0.45), rgba(42, 46, 50, 0.2));
+  transform-origin: 50% 100%;
+  transform: rotateX(90deg);
+  border-radius: 0 0 3px 3px;
+  pointer-events: none;
 }
 
 .episode-card:focus-visible {
