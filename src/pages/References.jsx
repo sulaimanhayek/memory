@@ -52,6 +52,9 @@ function References() {
           Plenz, D., &amp; Kital, S. T. (1999, August). A basal ganglia pacemaker formed by the subthalamic nucleus and external globus pallidus. <em>Nature, 400</em>(6745), 677–682. <a href="https://doi.org/10.1038/23281" target="_blank" rel="noopener noreferrer">doi:10.1038/23281</a>
         </li>
         <li>
+          Radford, A., Kim, J. W., Hallacy, C., Ramesh, A., Goh, G., Agarwal, S., ... Sutskever, I. (2021, February). Learning Transferable Visual Models From Natural Language Supervision. <em>arXiv</em>. <a href="https://doi.org/10.48550/arXiv.2103.00020" target="_blank" rel="noopener noreferrer">doi:10.48550/arXiv.2103.00020</a>
+        </li>
+        <li>
           Radvansky, G. A., &amp; Zacks, J. M. (2017, October). Event boundaries in memory and cognition. <em>Current Opinion in Behavioral Sciences, 17</em>, 133–140. <a href="https://doi.org/10.1016/j.cobeha.2017.08.006" target="_blank" rel="noopener noreferrer">doi:10.1016/j.cobeha.2017.08.006</a>
         </li>
         <li>
@@ -62,9 +65,6 @@ function References() {
         </li>
         <li>
           Schwan, S., Garsoffky, B., &amp; Hesse, F. W. (2000, March). Do film cuts facilitate the perceptual and cognitive organization of activity sequences? <em>Memory &amp; Cognition, 28</em>(2), 214–223. <a href="https://doi.org/10.3758/BF03213801" target="_blank" rel="noopener noreferrer">doi:10.3758/BF03213801</a>
-        </li>
-        <li>
-          Radford, A., Kim, J. W., Hallacy, C., Ramesh, A., Goh, G., Agarwal, S., ... Sutskever, I. (2021, February). Learning Transferable Visual Models From Natural Language Supervision. <em>arXiv</em>. <a href="https://doi.org/10.48550/arXiv.2103.00020" target="_blank" rel="noopener noreferrer">doi:10.48550/arXiv.2103.00020</a>
         </li>
         <li>
           Sherman, M., Fountas, Z., Seth, A. K., &amp; Roseboom, W. (2022, July). Trial-by-trial predictions of subjective time from human brain activity. <em>PLOS Computational Biology, 18</em>(7), e1010223. <a href="https://doi.org/10.1371/journal.pcbi.1010223" target="_blank" rel="noopener noreferrer">doi:10.1371/journal.pcbi.1010223</a>
@@ -85,10 +85,10 @@ function References() {
           Zacks, J. M. (2020, January). Event Perception and Memory. <em>Annual Review of Psychology, 71</em>, 165–191. <a href="https://doi.org/10.1146/annurev-psych-010419-051101" target="_blank" rel="noopener noreferrer">doi:10.1146/annurev-psych-010419-051101</a>
         </li>
         <li>
-          Zacks, J. M., &amp; Swallow, K. (2007, April). Event Segmentation. <em>Current Directions in Psychological Science, 16</em>(2), 80–84. <a href="https://doi.org/10.1111/j.1467-8721.2007.00480.x" target="_blank" rel="noopener noreferrer">doi:10.1111/j.1467-8721.2007.00480.x</a>
+          Zacks, J. M., Speer, N. K., Swallow, K. M., Braver, T. S., &amp; Reynolds, J. R. (2007, March). Event Perception: A Mind/Brain Perspective. <em>Psychological Bulletin, 133</em>(2), 273–293. <a href="https://doi.org/10.1037/0033-2909.133.2.273" target="_blank" rel="noopener noreferrer">doi:10.1037/0033-2909.133.2.273</a>
         </li>
         <li>
-          Zacks, J. M., Speer, N. K., Swallow, K. M., Braver, T. S., &amp; Reynolds, J. R. (2007, March). Event Perception: A Mind/Brain Perspective. <em>Psychological Bulletin, 133</em>(2), 273–293. <a href="https://doi.org/10.1037/0033-2909.133.2.273" target="_blank" rel="noopener noreferrer">doi:10.1037/0033-2909.133.2.273</a>
+          Zacks, J. M., &amp; Swallow, K. (2007, April). Event Segmentation. <em>Current Directions in Psychological Science, 16</em>(2), 80–84. <a href="https://doi.org/10.1111/j.1467-8721.2007.00480.x" target="_blank" rel="noopener noreferrer">doi:10.1111/j.1467-8721.2007.00480.x</a>
         </li>
       </ol>
     </div>
