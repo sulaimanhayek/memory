@@ -119,6 +119,98 @@ code {
   }
 }
 
+/* ===== Quote Overlay ===== */
+.quote-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.quote-content {
+  max-width: 700px;
+  padding: 2rem;
+  text-align: center;
+}
+
+.quote-text {
+  color: #fff;
+  font-size: 1.5rem;
+  font-style: italic;
+  line-height: 1.8;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.quote-text.visible {
+  opacity: 1;
+}
+
+.quote-attribution {
+  color: #fff;
+  font-size: 1.1rem;
+  font-style: italic;
+  margin-top: 1.25rem;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.quote-attribution.visible {
+  opacity: 1;
+}
+
+.scroll-hint {
+  position: absolute;
+  right: 2.5rem;
+  bottom: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  animation: scroll-bounce 2s ease-in-out infinite;
+}
+
+.scroll-hint-text {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.scroll-hint-arrow svg {
+  display: block;
+  opacity: 0.6;
+}
+
+@keyframes scroll-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+@media screen and (max-width: 768px) {
+  .quote-text {
+    font-size: 1.15rem;
+  }
+
+  .quote-attribution {
+    font-size: 0.95rem;
+  }
+
+  .quote-content {
+    padding: 1.5rem;
+  }
+
+  .scroll-hint {
+    right: 1.5rem;
+    bottom: 1.5rem;
+  }
+}
+
 /* ===== Hero Section (Home) ===== */
 .hero-container {
   display: flex;
