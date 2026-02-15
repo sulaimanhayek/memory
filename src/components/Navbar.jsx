@@ -27,11 +27,11 @@ function Navbar() {
             About
           </Link>
           <Link
-            to="/blog"
-            className={isActive('/blog') ? 'active' : ''}
+            to="/chapters"
+            className={isActive('/chapters') ? 'active' : ''}
             onClick={() => setMenuOpen(false)}
           >
-            Blog
+            Chapters
           </Link>
           <Link
             to="/references"
