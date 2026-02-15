@@ -85,6 +85,8 @@ function Home() {
 
   const transitioning = useRef(false)
   const timelineRef = useRef(null)
+  const scrollTargetRef = useRef(0)
+  const smoothProgressRef = useRef(0)
 
   // Fade in the first quote on mount
   useEffect(() => {
@@ -155,34 +157,48 @@ function Home() {
   }, [done, advance])
 
   useEffect(() => {
-    let frameId = 0
+    let rafId = 0
 
-    const updateProgress = () => {
+    const updateTarget = () => {
       if (!timelineRef.current) return
       const rect = timelineRef.current.getBoundingClientRect()
       const scrollable = rect.height - window.innerHeight
       if (scrollable <= 0) {
-        setScrollProgress(0)
+        scrollTargetRef.current = 0
         return
       }
-
       const raw = -rect.top / scrollable
-      const bounded = Math.max(0, Math.min(1, raw))
-      setScrollProgress(bounded)
+      scrollTargetRef.current = Math.max(0, Math.min(1, raw))
+    }
+
+    const animate = () => {
+      const target = scrollTargetRef.current
+      const current = smoothProgressRef.current
+      const diff = target - current
+
+      if (Math.abs(diff) > 0.0001) {
+        smoothProgressRef.current += diff * 0.12
+        setScrollProgress(smoothProgressRef.current)
+      }
+
+      rafId = requestAnimationFrame(animate)
     }
 
     const onScroll = () => {
       setHoveredEpisode(null)
-      cancelAnimationFrame(frameId)
-      frameId = requestAnimationFrame(updateProgress)
+      updateTarget()
     }
 
-    updateProgress()
+    updateTarget()
+    smoothProgressRef.current = scrollTargetRef.current
+    setScrollProgress(scrollTargetRef.current)
+
     window.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', onScroll)
+    rafId = requestAnimationFrame(animate)
 
     return () => {
-      cancelAnimationFrame(frameId)
+      cancelAnimationFrame(rafId)
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onScroll)
     }
@@ -216,11 +232,17 @@ function Home() {
     navigate(episode.slug)
   }, [navigate])
 
+  const easeInOutCubic = (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
+
   const getEpisodeStyle = (index) => {
     const distance = index - activeFloat
     const absDistance = Math.abs(distance)
     const hoverLift = hoveredEpisode === index ? 1 : 0
     const hoverShiftX = hoverLift ? (distance < 0 ? 10 : -10) : 0
+
+    // Eased transition: 0 = still in future stack, 1 = fully in past pile
+    const rawTransition = Math.min(1, Math.max(0, -distance))
+    const transition = easeInOutCubic(rawTransition)
 
     if (isPhone) {
       const stackAnchorX = 12
@@ -230,11 +252,11 @@ function Home() {
       const bottomPileY = 128
       const pileOffsetX = Math.min(index, 7) * 4
       const pileOffsetY = Math.min(index, 7) * 10
-      const transition = Math.min(1, Math.max(0, -distance))
       const hoverShiftY = hoverLift ? (distance < 0 ? -10 : 8) : 0
+      const arcY = Math.sin(transition * Math.PI) * -20
 
       const passedX = stackAnchorX + (bottomPileX + pileOffsetX - stackAnchorX) * transition
-      const passedY = stackAnchorY + (bottomPileY + pileOffsetY - stackAnchorY) * transition
+      const passedY = stackAnchorY + (bottomPileY + pileOffsetY - stackAnchorY) * transition + arcY
 
       const translateX = distance < 0
         ? passedX
@@ -253,9 +275,9 @@ function Home() {
         : Math.max(0.85, 1 - absDistance * 0.012) + hoverLift * 0.03
 
       const opacity = Math.max(0.28, 1 - absDistance * 0.07)
-      const rotateY = distance < 0 ? -4 : -10 + distance * 0.25
-      const rotateX = 9
-      const rotateZ = distance < 0 ? -2 : distance * 0.2
+      const rotateY = distance < 0 ? -2 : -4 + distance * 0.15
+      const rotateX = 3
+      const rotateZ = distance < 0 ? -1 : distance * 0.1
       const zIndex = Math.round(240 - absDistance * 8 + hoverLift * 40)
 
       return {
@@ -265,38 +287,49 @@ function Home() {
       }
     }
 
-    const stackAnchorX = 470
-    const futureStepX = 12
-    const stackY = -122
-    const leftPileX = -430
-    const leftPileY = 136
-    const pileOffsetX = Math.min(index, 7) * 12
-    const pileOffsetY = Math.min(index, 7) * 7
-    const transition = Math.min(1, Math.max(0, -distance))
+    // Step sizes per card in each stack
+    const stepX = 18
+    const stepY = -8
+    const stepZ = 36
+    // Right stack needs wider gaps to compensate for perspective compression
+    const futureStepX = 28
+    const futureStepY = -12
+
+    // Right stack anchor (future cards) and left pile anchor (past cards)
+    const stackAnchorX = 440
+    const stackY = -150
+    const leftPileX = -480
+    const leftPileY = 180
+
+    // Pile offsets: inverted so oldest card (back) peeks RIGHT, newest (front) is leftmost
+    const maxIdx = episodes.length - 1
+    const depthSlot = maxIdx - Math.min(index, maxIdx)
+    const pileOffsetX = depthSlot * stepX
+    const pileOffsetY = depthSlot * stepY
+    const arcY = Math.sin(transition * Math.PI) * -30
 
     const passedX = stackAnchorX + (leftPileX + pileOffsetX - stackAnchorX) * transition
-    const passedY = stackY + (leftPileY + pileOffsetY - stackY) * transition
+    const passedY = stackY + (leftPileY + pileOffsetY - stackY) * transition + arcY
 
     const translateY = distance < 0
       ? passedY - hoverLift * 18
-      : stackY + distance * 6 - hoverLift * 18
+      : stackY + distance * futureStepY - hoverLift * 18
 
     const translateX = distance < 0
       ? passedX + hoverShiftX
       : stackAnchorX + distance * futureStepX + hoverShiftX
 
     const translateZ = distance < 0
-      ? -Math.max(0, absDistance - 1) * 34 + hoverLift * 60
-      : -absDistance * 16 + hoverLift * 60
+      ? -absDistance * stepZ + hoverLift * 60
+      : -absDistance * 50 + hoverLift * 60
 
-    const scale = distance < 0
-      ? Math.max(0.72, 1 - absDistance * 0.045) + hoverLift * 0.045
-      : Math.max(0.78, 1 - absDistance * 0.02) + hoverLift * 0.045
+    const scale = Math.max(0.88, 1 - absDistance * 0.016) + hoverLift * 0.04
 
-    const opacity = Math.max(0.24, 1 - absDistance * 0.07)
-    const rotateY = distance < 0 ? -8 : -26 + distance * 0.35
+    const opacity = Math.max(0.24, 1 - absDistance * 0.06)
+    // Consistent rotateY for all cards — always pointing left like books on a shelf
+    const rotateY = -40
     const rotateX = 6
-    const rotateZ = distance < 0 ? -4 : distance * 0.45
+    const rotateZ = 0
     const zIndex = Math.round(240 - absDistance * 8 + hoverLift * 55)
 
     return {
