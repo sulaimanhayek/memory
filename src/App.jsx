@@ -5,6 +5,7 @@ import About from './pages/About'
 import Blog from './pages/Blog'
 import Welcome from './pages/posts/Welcome'
 import PostWithCode from './pages/posts/PostWithCode'
+import References from './pages/References'
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/blog" element={<Blog />} />
           <Route path="/posts/welcome" element={<Welcome />} />
           <Route path="/posts/post-with-code" element={<PostWithCode />} />
+          <Route path="/references" element={<References />} />
         </Routes>
       </main>
     </>

@@ -33,6 +33,13 @@ function Navbar() {
           >
             Blog
           </Link>
+          <Link
+            to="/references"
+            className={isActive('/references') ? 'active' : ''}
+            onClick={() => setMenuOpen(false)}
+          >
+            References
+          </Link>
           <a
             href="https://github.com/sulaimanhayek"
             target="_blank"
