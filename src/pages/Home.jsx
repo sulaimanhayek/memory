@@ -71,7 +71,7 @@ function Home() {
   const navigate = useNavigate()
   const [currentQuote] = useState(() => Math.floor(Math.random() * quotes.length))
   const [visible, setVisible] = useState(false)
-  const [done, setDone] = useState(() => sessionStorage.getItem('introSeen') === 'true')
+  const [done, setDone] = useState(true)
   const [scrollProgress, setScrollProgress] = useState(0)
   const [hoveredEpisode, setHoveredEpisode] = useState(null)
   const [isPhone, setIsPhone] = useState(() => {
