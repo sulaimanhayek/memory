@@ -339,11 +339,10 @@ function Home() {
 
       <section className="memory-home">
         <div className="memory-intro">
-          <p className="memory-kicker">Episodic Memory Project</p>
-          <h1>How the brain stores daily life as sequential frames</h1>
+          <p className="memory-kicker">an MSc project by Sulaiman Ahmed</p>
+          <h1>What do people remember?</h1>
           <p>
-            Scroll through the episode library. Each card represents a memory unit extracted from continuous
-            experience. Hover to pop one frame out of the stream and inspect it.
+            Investigating event segmentation in naturalistic scenes based on artificial neural network, perception census, and fMRI models
           </p>
           <Link to="/about" className="hero-button">LEARN MORE ABOUT THE PROJECT &rarr;</Link>
         </div>
