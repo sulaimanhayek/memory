@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { chapters } from '../content/chapters'
 
 const quotes = [
   { text: '"You remember too much, my mother said to me recently. Why hold onto all that? And I said, Where can I put it down?"', attribution: '— Anne Carson' },
@@ -8,64 +9,14 @@ const quotes = [
   { text: '"Your Remedy is within you, but you do not sense it. Your Sickness is from you, but you do not perceive it. You Presume you are a small entity, But within you is enfolded the entire universe. You are indeed the evident book, By whose alphabet the hidden becomes the manifest. Therefore, you have no need to look beyond yourself, What you seek is within you, if only you reflect."', attribution: '— Ali ibn Abi Talib' },
 ]
 
-const episodes = [
-  {
-    title: 'Chapter 1: Introduction',
-    note: 'Theoretical groundwork for episodic memory and core neuroscience concepts.',
-    tag: 'theory',
-    time: 'Chapter 1',
-    image: '/posts/welcome/thumbnail.jpg',
-    slug: '/chapters/introduction',
-  },
-  {
-    title: 'Chapter 2: Event Segmentation',
-    note: 'How continuous experience is parsed into discrete rememberable events.',
-    tag: 'methods',
-    time: 'Chapter 2',
-    image: '/posts/welcome/thumbnail.jpg',
-    slug: '/chapters/event-segmentation',
-  },
-  {
-    title: 'Chapter 3: CNN Model',
-    note: 'A convolutional approach to identifying event boundaries from video.',
-    tag: 'deep learning',
-    time: 'Chapter 3',
-    image: '/posts/welcome/thumbnail.jpg',
-    slug: '/chapters/cnn-model',
-  },
-  {
-    title: 'Chapter 4: Perception Census Model',
-    note: 'A perception-led model integrating salience and subjective dimensions.',
-    tag: 'perception',
-    time: 'Chapter 4',
-    image: '/posts/welcome/thumbnail.jpg',
-    slug: '/chapters/perception-census-model',
-  },
-  {
-    title: 'Chapter 5: fMRI-Based Model of Event Segmentation',
-    note: 'Neural signatures of event boundaries and their relationship to recall.',
-    tag: 'fMRI',
-    time: 'Chapter 5',
-    image: '/posts/welcome/thumbnail.jpg',
-    slug: '/chapters/fmri-model',
-  },
-  {
-    title: 'Chapter 6: Online Behavioural Study',
-    note: 'Large-scale online validation of memory and segmentation findings.',
-    tag: 'study',
-    time: 'Chapter 6',
-    image: '/posts/welcome/thumbnail.jpg',
-    slug: '/chapters/online-behavioural-study',
-  },
-  {
-    title: 'Chapter 7: Discussion',
-    note: 'Integrated interpretation, limitations, and future directions.',
-    tag: 'discussion',
-    time: 'Chapter 7',
-    image: '/posts/welcome/thumbnail.jpg',
-    slug: '/chapters/discussion',
-  },
-]
+const episodes = chapters.map((ch) => ({
+  title: ch.title,
+  note: ch.note,
+  tag: ch.tag,
+  time: `Chapter ${ch.order}`,
+  image: ch.image,
+  slug: `/chapters/${ch.slug}`,
+}))
 
 function Home() {
   const navigate = useNavigate()
