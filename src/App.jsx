@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import Navbar from './components/Navbar'
+import ChatWidget from './components/ChatWidget'
 import Home from './pages/Home'
 import About from './pages/About'
 import Blog from './pages/Blog'
@@ -19,6 +20,7 @@ function App() {
           <Route path="/references" element={<References />} />
         </Routes>
       </main>
+      <ChatWidget />
     </>
   )
 }
