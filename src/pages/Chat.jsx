@@ -3,8 +3,7 @@ import { useState, useRef, useEffect } from 'react'
 const API_URL = import.meta.env.VITE_CHAT_API_URL || 'http://localhost:8000'
 const API_KEY = import.meta.env.VITE_CHAT_API_KEY || ''
 
-export default function ChatWidget() {
-  const [open, setOpen] = useState(false)
+export default function Chat() {
   const [messages, setMessages] = useState([
     { role: 'bot', text: 'Hi! Ask me anything about the thesis.' },
   ])
@@ -53,55 +52,35 @@ export default function ChatWidget() {
   }
 
   return (
-    <>
-      {/* Floating toggle button */}
-      <button
-        className="chat-toggle"
-        onClick={() => setOpen((o) => !o)}
-        aria-label={open ? 'Close chat' : 'Open chat'}
-      >
-        {open ? '\u2715' : '\u2709'}
-      </button>
+    <div className="chat-page">
+      <h1 className="chat-page-title">Talk to Thesis</h1>
 
-      {/* Chat panel */}
-      {open && (
-        <div className="chat-panel">
-          <div className="chat-header">
-            <span>Thesis Chat</span>
-            <button className="chat-close" onClick={() => setOpen(false)}>
-              &times;
-            </button>
+      <div className="chat-page-messages">
+        {messages.map((msg, i) => (
+          <div key={i} className={`chat-msg chat-msg-${msg.role}`}>
+            {msg.text}
           </div>
-
-          <div className="chat-messages">
-            {messages.map((msg, i) => (
-              <div key={i} className={`chat-msg chat-msg-${msg.role}`}>
-                {msg.text}
-              </div>
-            ))}
-            {loading && (
-              <div className="chat-msg chat-msg-bot chat-typing">
-                Thinking...
-              </div>
-            )}
-            <div ref={messagesEndRef} />
+        ))}
+        {loading && (
+          <div className="chat-msg chat-msg-bot chat-typing">
+            Thinking...
           </div>
+        )}
+        <div ref={messagesEndRef} />
+      </div>
 
-          <form className="chat-input-form" onSubmit={handleSend}>
-            <input
-              className="chat-input"
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask about the thesis..."
-              disabled={loading}
-            />
-            <button className="chat-send" type="submit" disabled={loading}>
-              Send
-            </button>
-          </form>
-        </div>
-      )}
-    </>
+      <form className="chat-page-input" onSubmit={handleSend}>
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Ask about the thesis..."
+          disabled={loading}
+        />
+        <button type="submit" disabled={loading}>
+          Send
+        </button>
+      </form>
+    </div>
   )
 }
