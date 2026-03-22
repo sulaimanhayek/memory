@@ -65,3 +65,16 @@ predicted by EST. To achieve this aim, the following objectives were set:
 - Extract salient events from fMRI voxel-wise of visual region from human participants watching naturalistic videos.
 - Identify boundaries around the events extracted from the 3 methods mentioned above, and conduct online behavioural study to test memory recall in relation to event boundaries
 - Analyse memory recall in relation to event boundaries using NLP methods.
+
+# 1.3 Thesis Outline
+The remainder of this report is organised as follows:
+
+Chapter 2 will look into event segmentation theories and literature, introduces Event Segmentation Theory architecture, event perception and memory and the connection between event-segmentation and time perception.
+
+Chapter 3 Introduces deep convolutional neural network (CNN)-based model to extract salient changes from video frames and explores the architecture of AlexNet layers, which has some resemblance to the architecture of visual cortex.
+
+Chapter 4 details the processing of 8,272 records of online participants performing the event-segmentation task, as part of the perception census online study.
+
+Chapter 5 provides an overview of fMRI-based duration estimations, and the process of extracting salient events.
+
+Chapter 6 details the technical aspect of bringing datasets of 3 studies aforementioned and summarise their event-boundaries and test through online behavioural study whether content around those boundaries are better remembered.
