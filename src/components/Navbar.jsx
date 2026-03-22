@@ -40,6 +40,13 @@ function Navbar() {
           >
             References
           </Link>
+          <Link
+            to="/chat"
+            className={isActive('/chat') ? 'active' : ''}
+            onClick={() => setMenuOpen(false)}
+          >
+            Chat
+          </Link>
           <a
             href="https://github.com/sulaimanhayek"
             target="_blank"

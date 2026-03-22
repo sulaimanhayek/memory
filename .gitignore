@@ -1,1 +1,5 @@
 node_modules
+model/output/
+model/data/
+plan.md
+.env
