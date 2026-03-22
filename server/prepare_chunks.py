@@ -10,13 +10,14 @@ import glob
 
 CHAPTERS_DIR = os.path.join(os.path.dirname(__file__), "..", "src", "content", "chapters")
 OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "thesis_chunks.json")
+LAMBDA_OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "..", "lambda", "thesis_chunks.json")
 
 
 def strip_frontmatter(text: str) -> str:
     return re.sub(r"^---\n.*?\n---\n?", "", text, count=1, flags=re.DOTALL).strip()
 
 
-def chunk_text(text: str, max_words: int = 150) -> list[str]:
+def chunk_text(text: str, max_words: int = 500) -> list[str]:
     """Split text into chunks at paragraph boundaries."""
     paragraphs = re.split(r"\n{2,}", text)
     chunks, current = [], []
@@ -46,17 +47,17 @@ def main():
 
         body = strip_frontmatter(raw)
         if body and "will be updated soon" not in body.lower():
-            # Extract chapter number for better keyword matching
+            # Extract chapter number or use title for references
             ch_num = re.search(r"Chapter (\d+)", title)
             ch_label = f"Chapter {ch_num.group(1)}" if ch_num else title
             for chunk in chunk_text(body):
-                # Repeat chapter label to boost TF-IDF matching on "chapter N" queries
                 all_chunks.append(f"[{title}] ({ch_label})\n{chunk}")
 
-    with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
-        json.dump(all_chunks, f, indent=2)
-
-    print(f"Wrote {len(all_chunks)} chunks to {OUTPUT_PATH}")
+    # Write to both server and lambda locations
+    for output_path in [OUTPUT_PATH, LAMBDA_OUTPUT_PATH]:
+        with open(output_path, "w", encoding="utf-8") as f:
+            json.dump(all_chunks, f, indent=2)
+        print(f"Wrote {len(all_chunks)} chunks to {output_path}")
 
 
 if __name__ == "__main__":

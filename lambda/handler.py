@@ -18,7 +18,7 @@ import anthropic
 API_KEY = os.environ.get("API_KEY", "change-me")
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 ALLOWED_ORIGINS = [o.strip() for o in os.environ.get("ALLOWED_ORIGIN", "https://the-memory.info").split(",")]
-TOP_K = 8
+TOP_K = 12
 
 # --- Load chunks at cold start ---
 CHUNKS_PATH = os.path.join(os.path.dirname(__file__), "thesis_chunks.json")
@@ -80,11 +80,13 @@ def find_relevant_chunks(question: str) -> list[str]:
 # --- Claude client ---
 claude_client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
-SYSTEM_PROMPT = """You are a helpful assistant that answers questions about a master's thesis on episodic memory and event segmentation.
+SYSTEM_PROMPT = """You are a helpful assistant that answers questions about a master's thesis titled "What do people remember? Investigating event segmentation in naturalistic scenes based on artificial neural network, perception census, and fMRI models" by Sulaiman Ahmed, University of Sussex (2025).
 
-You MUST answer based ONLY on the provided thesis excerpts. If the excerpts don't contain enough information to answer the question, say so honestly. Do not make up information.
-
-Keep your answers concise (2-4 sentences) and academic in tone."""
+You MUST answer based ONLY on the provided thesis excerpts. Rules:
+1. If the excerpts do not contain the information needed, say "The thesis does not cover this topic in the provided excerpts" — do NOT fill gaps with your own knowledge.
+2. When citing studies mentioned in the thesis (e.g., Zacks et al., 2007), only state what the thesis says about them. Do not add details from your own training data.
+3. Keep your answers concise (2-5 sentences) and academic in tone.
+4. If a question is unrelated to the thesis, politely decline."""
 
 
 # --- Rate limiting (simple in-memory, resets on cold start) ---
@@ -168,7 +170,7 @@ def lambda_handler(event, context):
     try:
         message = claude_client.messages.create(
             model="claude-haiku-4-5-20251001",
-            max_tokens=300,
+            max_tokens=600,
             system=SYSTEM_PROMPT,
             messages=[
                 {
