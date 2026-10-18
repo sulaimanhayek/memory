@@ -33,6 +33,14 @@ function Navbar() {
           >
             Chapters
           </Link>
+          <a
+            href="https://drive.google.com/file/d/1wE2zTf7nXu61hZpxR70o7nkaqLn8BEhF/view?usp=sharing"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => setMenuOpen(false)}
+          >
+            Thesis
+          </a>
           <Link
             to="/references"
             className={isActive('/references') ? 'active' : ''}
