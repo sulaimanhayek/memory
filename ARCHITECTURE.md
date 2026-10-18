@@ -52,19 +52,19 @@ memory/
 │   ├── handler.py              # Lambda function — RAG search + Claude API
 │   ├── thesis_chunks.json      # Same chunks, copied here for Lambda packaging
 │   ├── function.zip            # Deployable Lambda package (handler + deps)
-│   └── package/                # Installed Python dependencies for Lambda
+│   └── package/                # Installed Python dependencies for Lambda (gitignored)
 │
 ├── model/                      # Legacy GPT-2 fine-tuning (deprecated, replaced by RAG)
 │   ├── train.py                # HuggingFace training script
 │   └── prepare_data.py         # Data prep for fine-tuning
 │
-├── docs/                       # Built frontend (output of `npm run build`)
-├── public/                     # Static images and assets
+├── docs/                       # Built frontend (output of `npm run build`) — this is what GitHub Pages serves
+├── public/                     # Static images and assets (public/CNAME is copied into docs/ on build)
 ├── index.html                  # HTML shell for the React app
-├── vite.config.js              # Vite build configuration
+├── vite.config.js              # Vite build configuration (outDir: docs)
 ├── package.json                # Node.js dependencies
 ├── CNAME                       # Custom domain for GitHub Pages
-└── .github/workflows/static.yml  # GitHub Pages deployment workflow
+└── .env                        # Chat API URL + key baked into the build (gitignored)
 ```
 
 ---
@@ -104,12 +104,29 @@ Routes:
 
 ### Building and deploying
 
+The site uses GitHub Pages' **classic "deploy from a branch"** mode: Pages is set to serve the `docs/` folder of the `main` branch as-is. There is no custom workflow — GitHub's built-in `pages-build-deployment` run publishes `docs/` automatically after every push to `main`.
+
+That means the built files have to be committed:
+
 ```bash
-npm run build          # Vite compiles React → static files in docs/
-git push origin main   # GitHub Actions deploys docs/ to GitHub Pages
+npm run build          # Vite compiles React → static files in docs/ (wipes and rewrites the folder)
+git add docs/          # commit the rebuilt site together with the source change
+git commit -m "..."
+git push origin main   # pages-build-deployment publishes docs/ within a minute or two
 ```
 
-The site is served at `the-memory.info` via GitHub Pages (configured in `CNAME`).
+If you change something in `src/` but don't rebuild and commit `docs/`, the live site won't change.
+
+The build reads two values from `.env` (gitignored) and bakes them into the JavaScript bundle:
+
+| Variable | Purpose |
+|---|---|
+| `VITE_CHAT_API_URL` | Chat backend URL (`https://api.the-memory.info`) |
+| `VITE_CHAT_API_KEY` | Key the chat page sends in the `X-API-Key` header |
+
+Because it ends up in the public bundle, `VITE_CHAT_API_KEY` is **not a secret** — anyone can read it from the browser. It only stops casual drive-by requests; the real protection is the throttling and spend cap described in [Limits and Cost Controls](#limits-and-cost-controls).
+
+The site is served at `the-memory.info` via GitHub Pages (the custom domain comes from `public/CNAME`, which Vite copies into `docs/CNAME`).
 
 ---
 
@@ -170,7 +187,7 @@ There's also a shortcut: if the user asks about a specific chapter (e.g., *"What
 
 ### Step 3: Generate an answer with Claude
 
-The top 12 chunks are sent to **Claude Haiku** (Anthropic's fast, lightweight model) along with the user's question and a system prompt.
+The top 12 chunks are sent to **Claude Haiku 4.5** (`claude-haiku-4-5-20251001`, Anthropic's fast, lightweight model) along with the user's question and a system prompt. Answers are capped at 600 output tokens. The Lambda calls the Anthropic API directly with its own `ANTHROPIC_API_KEY` (not Amazon Bedrock), so model usage is billed by Anthropic, not AWS.
 
 The system prompt is critical for reducing hallucination:
 
@@ -190,7 +207,9 @@ User types question
         ↓
 Chat.jsx sends POST to https://api.the-memory.info/ask
         ↓
-Lambda receives request
+API Gateway (HTTP API, throttled to 1 req/s, burst 3)
+        ↓
+Lambda receives request (max 2 running at once)
         ↓
 Validate API key + rate limit (10 req/min per IP)
         ↓
@@ -237,8 +256,21 @@ cd lambda/package && zip -r ../function.zip . && cd ../..
 # 4. Deploy to AWS
 aws lambda update-function-code \
   --function-name thesis-chatbot \
+  --region eu-west-1 \
   --zip-file fileb://lambda/function.zip
 ```
+
+Nothing deploys the Lambda automatically — editing `lambda/handler.py` and pushing to GitHub does not change the live chatbot until you run the steps above.
+
+### AWS resources
+
+Everything lives in **eu-west-1 (Ireland)**:
+
+| Resource | Name / ID | Notes |
+|---|---|---|
+| Lambda function | `thesis-chatbot` | Python 3.12, 256 MB, 30 s timeout |
+| API Gateway (HTTP API) | `thesis-chatbot-api` (`aoj63x8pa3`), stage `$default` | Routes requests to the Lambda |
+| Custom domain | `api.the-memory.info` | Points at the API Gateway |
 
 ### Environment variables on Lambda
 
@@ -249,6 +281,60 @@ These are set in the AWS Lambda console (not committed to git):
 | `ANTHROPIC_API_KEY` | API key for calling Claude |
 | `API_KEY` | Secret key that the frontend sends to authenticate |
 | `ALLOWED_ORIGIN` | CORS origin (`https://the-memory.info`) |
+
+---
+
+## Limits and Cost Controls
+
+The chat key in the frontend bundle is public, so anyone could call the API directly. Several layers keep a runaway bill from happening:
+
+| Layer | Limit | What the visitor sees when it's hit |
+|---|---|---|
+| API Gateway stage throttle | 1 request/second, burst of 3 | `503 Service Unavailable` |
+| Lambda reserved concurrency | 2 requests running at once | `503` from API Gateway |
+| In-handler rate limit (`handler.py`) | 10 requests/minute per IP | `429 Rate limit exceeded` |
+| Anthropic spend limit | $10/month on the Claude Console workspace that holds the Lambda's `ANTHROPIC_API_KEY` | `500` with Anthropic's error until the 1st of next month (UTC) |
+
+The in-handler limit is kept in memory, so it resets whenever Lambda starts a fresh instance — treat it as a courtesy, not a guarantee. The API Gateway and Lambda limits are the reliable throttles, and the **Anthropic spend limit is the hard cap on cost**.
+
+**Typical cost:** each question sends roughly 7,000 input tokens (12 chunks + prompt) and gets up to 600 output tokens back. At Haiku 4.5 pricing ($1 / $5 per million input / output tokens) that's about **$0.01 per question**, so the $10 cap covers around 1,000 questions a month. Normal visitor traffic never comes close to the throttles.
+
+### Where each limit is set
+
+- **API Gateway throttle and Lambda concurrency** — set with the AWS CLI (commands below) or in the AWS Console.
+- **Anthropic spend limit** — in the [Claude Console](https://platform.claude.com/settings/workspaces): **Settings → Workspaces →** select the workspace **→ Spend limits**. Email alerts can be added on the same page. To check which workspace the chatbot's key belongs to, look under **Settings → API keys**.
+
+### Check the current settings
+
+```bash
+aws apigatewayv2 get-stage --api-id aoj63x8pa3 --stage-name '$default' \
+  --region eu-west-1 --query 'DefaultRouteSettings'
+
+aws lambda get-function-concurrency --function-name thesis-chatbot --region eu-west-1
+```
+
+### Change or roll back the limits
+
+```bash
+# Change the API Gateway throttle (rate = steady requests/second, burst = short spikes)
+aws apigatewayv2 update-stage --api-id aoj63x8pa3 --stage-name '$default' \
+  --region eu-west-1 \
+  --default-route-settings 'ThrottlingBurstLimit=3,ThrottlingRateLimit=1,DetailedMetricsEnabled=false'
+
+# Roll back to AWS's account-level default (10,000 req/s, burst 5,000)
+aws apigatewayv2 update-stage --api-id aoj63x8pa3 --stage-name '$default' \
+  --region eu-west-1 \
+  --default-route-settings 'ThrottlingBurstLimit=5000,ThrottlingRateLimit=10000,DetailedMetricsEnabled=false'
+
+# Change the Lambda concurrency cap
+aws lambda put-function-concurrency --function-name thesis-chatbot \
+  --region eu-west-1 --reserved-concurrent-executions 2
+
+# Remove the Lambda concurrency cap entirely
+aws lambda delete-function-concurrency --function-name thesis-chatbot --region eu-west-1
+```
+
+To raise or remove the Anthropic spend limit, use **Change limit** on the workspace's Spend limits page in the Claude Console.
 
 ---
 
@@ -310,5 +396,8 @@ The `model/` directory is kept for reference but is not used in the live system.
 | Build frontend | `npm run build` |
 | Regenerate chunks | `python server/prepare_chunks.py` |
 | Rebuild Lambda zip | `cd lambda/package && zip -r ../function.zip .` |
-| Deploy Lambda | `aws lambda update-function-code --function-name thesis-chatbot --zip-file fileb://lambda/function.zip` |
+| Deploy frontend | `npm run build && git add docs/ && git commit && git push origin main` |
+| Deploy Lambda | `aws lambda update-function-code --function-name thesis-chatbot --region eu-west-1 --zip-file fileb://lambda/function.zip` |
+| Check API throttle | `aws apigatewayv2 get-stage --api-id aoj63x8pa3 --stage-name '$default' --region eu-west-1 --query DefaultRouteSettings` |
+| Check Lambda concurrency | `aws lambda get-function-concurrency --function-name thesis-chatbot --region eu-west-1` |
 | Run local server | `cd server && uvicorn app:app --reload` |
