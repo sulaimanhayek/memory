@@ -3,3 +3,6 @@ model/output/
 model/data/
 plan.md
 .env
+.DS_Store
+.vite/
+lambda/package/
